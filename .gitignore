@@ -1,0 +1,5 @@
+venv/
+__pycache__/
+*.pyc
+data/highscore.txt
+data/settings.txt
