@@ -77,6 +77,13 @@ Download `AquaClean-Windows.zip` or `AquaClean-macOS.zip`, unzip it, and run
 pygame installation needed. These builds are produced by the GitHub Actions
 workflow in `.github/workflows/build.yml` using PyInstaller.
 
+## Play on your phone (no download)
+
+Open **https://rijitghosh.github.io/AquaClean/** in any phone browser (Android or iPhone).
+Turn the phone sideways and hold your finger on the screen to steer the boat; tap PAUSE to pause.
+This browser version is built automatically from the same code (WebAssembly via pygbag) by
+`.github/workflows/deploy-web.yml` and uses `main_web.py` as its entry point.
+
 ## How to Install (running from source instead)
 
 1. Make sure Python 3.8 or newer is installed.

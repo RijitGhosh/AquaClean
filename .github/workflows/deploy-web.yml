@@ -1,0 +1,51 @@
+name: Deploy Web Version
+
+# Builds the browser/phone version of AquaClean (WebAssembly via pygbag)
+# and publishes it to GitHub Pages:  https://rijitghosh.github.io/AquaClean/
+# Runs automatically on every push to main.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pygbag
+        run: pip install pygbag
+      - name: Prepare web build folder
+        run: |
+          mkdir webbuild
+          cp game.py player.py fish.py pollution.py algae.py level.py ui.py settings.py data_manager.py webbuild/
+          cp -r assets webbuild/assets
+          cp main_web.py webbuild/main.py
+      - name: Build with pygbag
+        run: python -m pygbag --build webbuild
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: webbuild/build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

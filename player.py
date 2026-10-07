@@ -33,8 +33,13 @@ class Player:
 
         self.moving = False
 
-    def handle_input(self, keys):
-        """Move the boat based on currently pressed keys, then clamp to the river area."""
+    def handle_input(self, keys, touch_target=None):
+        """
+        Move the boat based on currently pressed keys, then clamp to the river area.
+        touch_target: optional (x, y) screen position. While a finger / mouse button
+        is held down, the boat steers toward that point (this is how phones play,
+        since there is no keyboard).
+        """
         self.prev_pos = self.rect.topleft
         dx, dy = 0, 0
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -47,6 +52,17 @@ class Player:
             dy -= self.speed
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             dy += self.speed
+
+        # Touch / mouse-hold steering: move toward the touched point
+        if touch_target is not None:
+            tx, ty = touch_target
+            gap_x = tx - self.rect.centerx
+            gap_y = ty - self.rect.centery
+            if abs(gap_x) > self.speed:
+                dx += self.speed if gap_x > 0 else -self.speed
+                self.facing = "right" if gap_x > 0 else "left"
+            if abs(gap_y) > self.speed:
+                dy += self.speed if gap_y > 0 else -self.speed
 
         self.moving = (dx != 0 or dy != 0)
 

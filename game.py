@@ -175,6 +175,9 @@ class Game:
         }
         self.back_button = Button("BACK", (cx, SCREEN_HEIGHT - 60), size=(180, 50))
 
+        # On-screen pause button (so phones / touch screens can pause without a keyboard)
+        self.pause_button = Button("PAUSE", (SCREEN_WIDTH - 70, HUD_HEIGHT + 30), size=(100, 36), font_size=FONT_SMALL)
+
         # Level select screen buttons
         self.level_select_buttons = {
             1: Button("LEVEL 1 - Easy", (cx, 210), size=(360, 60)),
@@ -303,6 +306,22 @@ class Game:
             pygame.display.flip()
         pygame.quit()
 
+    async def run_async(self):
+        """
+        Same game loop as run(), but yields control to the browser each frame.
+        Used only by the web/phone version (main_web.py); the desktop game
+        keeps using run() exactly as before.
+        """
+        import asyncio
+        while self.running:
+            dt = self.clock.tick(FPS) / 1000.0
+            self._handle_events()
+            self._update(dt)
+            self._draw()
+            pygame.display.flip()
+            await asyncio.sleep(0)
+        pygame.quit()
+
     # ------------------------------------------------------------------
     # EVENT HANDLING
     # ------------------------------------------------------------------
@@ -311,6 +330,10 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
                 return
+
+            if self.state == STATE_PLAYING and self.pause_button.is_clicked(event):
+                self.state = STATE_PAUSED
+                continue
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p and self.state == STATE_PLAYING:
@@ -490,7 +513,12 @@ class Game:
 
     def _update_gameplay(self, dt):
         keys = pygame.key.get_pressed()
-        self.player.handle_input(keys)
+        touch_target = None
+        if pygame.mouse.get_pressed()[0]:
+            mouse_pos = pygame.mouse.get_pos()
+            if not self.pause_button.rect.collidepoint(mouse_pos):
+                touch_target = mouse_pos
+        self.player.handle_input(keys, touch_target)
         self.level.update(dt)
 
         # Algae obstacles block the boat's path - revert movement on collision
@@ -776,8 +804,8 @@ class Game:
             draw_panel(self.screen, warn_rect, color=(255, 235, 235), border_color=COLOR_RED, radius=10)
             draw_text(self.screen, self.warning_message, FONT_SMALL, COLOR_RED, center=warn_rect.center, bold=True)
 
-        draw_text(self.screen, "Press P to Pause", 14, (230, 240, 250),
-                  topleft=(SCREEN_WIDTH - 150, SCREEN_HEIGHT - 24))
+        self.pause_button.update_hover(pygame.mouse.get_pos())
+        self.pause_button.draw(self.screen)
 
     def _draw_pause_overlay(self):
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
