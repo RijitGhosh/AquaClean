@@ -65,7 +65,19 @@ water pollution and responsible waste management in an interactive way.
 | Move Right    | Right Arrow / D   |
 | Pause / Resume| P                 |
 
-## How to Install
+## Download & Play (no Python required)
+
+Pre-built standalone versions for Windows and macOS are published automatically
+on the **Releases** page of this repository whenever a version tag is pushed:
+
+**[github.com/RijitGhosh/AquaClean/releases/latest](https://github.com/RijitGhosh/AquaClean/releases/latest)**
+
+Download `AquaClean-Windows.zip` or `AquaClean-macOS.zip`, unzip it, and run
+`AquaClean.exe` (Windows) or `AquaClean.app` (macOS) directly — no Python or
+pygame installation needed. These builds are produced by the GitHub Actions
+workflow in `.github/workflows/build.yml` using PyInstaller.
+
+## How to Install (running from source instead)
 
 1. Make sure Python 3.8 or newer is installed.
 2. Install the required packages:

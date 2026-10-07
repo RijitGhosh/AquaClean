@@ -9,16 +9,26 @@ hunting through gameplay code.
 """
 
 import os
+import sys
 
 # ---------------------------------------------------------------------------
 # BASE PATHS
 # ---------------------------------------------------------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# When packaged into a standalone executable (PyInstaller), bundled files
+# (images/sounds) live in a temporary read-only folder at sys._MEIPASS.
+# Save files (high score / settings) must instead go somewhere writable and
+# persistent, so those are kept in the player's home folder when frozen.
+if getattr(sys, "frozen", False):
+    BASE_DIR = sys._MEIPASS
+    DATA_DIR = os.path.join(os.path.expanduser("~"), ".aquaclean")
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_DIR = os.path.join(BASE_DIR, "data")
+
 ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 IMAGES_DIR = os.path.join(ASSETS_DIR, "images")
 SOUNDS_DIR = os.path.join(ASSETS_DIR, "sounds")
 FONTS_DIR = os.path.join(ASSETS_DIR, "fonts")
-DATA_DIR = os.path.join(BASE_DIR, "data")
 HIGHSCORE_FILE = os.path.join(DATA_DIR, "highscore.txt")
 SETTINGS_FILE = os.path.join(DATA_DIR, "settings.txt")
 
