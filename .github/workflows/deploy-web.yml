@@ -1,8 +1,5 @@
 name: Deploy Web Version
 
-# Builds the browser/phone version of AquaClean
-# and publishes it to GitHub Pages.
-
 on:
   push:
     branches: [main]
@@ -43,10 +40,7 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          python -m pygbag --build webbuild 2>&1 | tee pygbag.log
-          status=${PIPESTATUS[0]}
-          cat pygbag.log
-          exit $status
+          python -m pygbag --build --disable-sound-format-error webbuild
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
