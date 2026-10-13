@@ -1,17 +1,19 @@
-"""
-main_web.py
------------
-Entry point for the BROWSER / PHONE version of AquaClean (built with pygbag).
-The desktop game still starts from main.py - this file is only used for the web build.
-
-On a phone: hold your finger on the screen and the boat steers toward it.
-"""
+# /// script
+# dependencies = [
+#   "pygame-ce",
+# ]
+# ///
 
 import asyncio
+import pygame
 from game import Game
 
 
 async def main():
+    print("AquaClean web startup")
+    print("Pygame module:", getattr(pygame, "__file__", "unknown"))
+    print("Pygame init available:", hasattr(pygame, "init"))
+
     game = Game()
     await game.run_async()
 
