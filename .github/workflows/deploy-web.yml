@@ -26,14 +26,47 @@ jobs:
           python-version: "3.12"
 
       - name: Install pygbag
-        run: pip install "pygbag==0.9.3"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "pygbag==0.9.3"
 
       - name: Prepare web build folder
         run: |
-          mkdir webbuild
+          mkdir -p webbuild/assets
+
           cp game.py player.py fish.py pollution.py algae.py level.py ui.py settings.py data_manager.py webbuild/
-          cp -r assets webbuild/assets
-          cp main_web.py webbuild/main.py
+          cp -r assets/. webbuild/assets/
+
+          cat > webbuild/main.py <<'PY'
+          # /// script
+          # dependencies = [
+          #   "pygame-ce",
+          # ]
+          # ///
+
+          import asyncio
+          import pygame
+          from game import Game
+
+          async def main():
+              print("AquaClean web startup")
+              print("Pygame module:", getattr(pygame, "__file__", "unknown"))
+              print("Pygame init available:", hasattr(pygame, "init"))
+
+              if not hasattr(pygame, "init"):
+                  raise RuntimeError(
+                      "pygame.init is missing. Check the pygame-ce dependency."
+                  )
+
+              game = Game()
+              await game.run_async()
+
+          asyncio.run(main())
+          PY
+
+          echo "Checking generated web entry point:"
+          sed -n '1,30p' webbuild/main.py
+          grep -q 'pygame-ce' webbuild/main.py
 
       - name: Build with pygbag
         env:
