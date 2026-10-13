@@ -40,7 +40,7 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          python -m pygbag --build --disable-sound-format-error webbuild
+          python -m pygbag --build --disable-sound-format-error --ume_block=0 webbuild
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
